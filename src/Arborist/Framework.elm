@@ -6,6 +6,7 @@ port module Arborist.Framework exposing (
     run,
     test,
     assert,
+    not',
     equals,
     isIntBetween
   )
@@ -50,6 +51,13 @@ run tests =
 
 assert : Task a b -> Matcher a b -> Assertion
 assert actual matcher = matcher actual
+
+not' : Matcher a b -> Matcher a b
+not' matcher actual =
+  let
+    (task, failureMessages) = matcher actual
+  in
+    (Task.map not task, failureMessages)
 
 equals : Task a b -> Matcher a b
 equals expected actual =
