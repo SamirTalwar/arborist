@@ -5,6 +5,7 @@ import Html
 import Html.App exposing (program)
 
 import AsynchronousTest
+import BetweenTest
 import FailureTest
 import SynchronousTest
 
@@ -13,7 +14,8 @@ tests =
   List.concat [
     SynchronousTest.tests,
     AsynchronousTest.tests,
-    FailureTest.tests
+    FailureTest.tests,
+    BetweenTest.tests
   ]
 
 main : Program Never
