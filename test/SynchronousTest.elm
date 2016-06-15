@@ -8,7 +8,7 @@ import Arborist.Matchers exposing (..)
 tests : Tests
 tests =
   [
-    test "performs simple equality checks" (
+    test "sync: performs simple equality checks" (
       let
         a = True |> Task.succeed
         b = True |> Task.succeed
@@ -16,7 +16,7 @@ tests =
         assert a (equals b)
     ),
 
-    test "recognises negation" (
+    test "sync: recognises negation" (
       let
         a = True |> Task.succeed
         b = False |> Task.succeed
@@ -24,7 +24,7 @@ tests =
         assert a (not' (equals b))
     ),
 
-    test "can match results" (
+    test "sync: can match results" (
       let
         a = Ok "foo" |> Task.fromResult
         b = Ok "foo" |> Task.fromResult
@@ -32,7 +32,7 @@ tests =
         assert a (equals b)
     ),
 
-    test "recognises test failures" (
+    test "sync: recognises test failures" (
       let
         a = Ok "Nope." |> Task.fromResult
         b = Ok "foo" |> Task.fromResult
@@ -43,7 +43,7 @@ tests =
         ])))
     ),
 
-    test "recognises test errors" (
+    test "sync: recognises test errors" (
       let
         a = Err "Oh no!" |> Task.fromResult
         b = Ok "foo" |> Task.fromResult

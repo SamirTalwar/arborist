@@ -4,12 +4,14 @@ import Arborist.Framework exposing (..)
 import Html
 import Html.App exposing (program)
 
+import AsynchronousTest
 import FailureTest
 import SynchronousTest
 
 tests : List Test
 tests =
   List.concat [
+    AsynchronousTest.tests,
     FailureTest.tests,
     SynchronousTest.tests
   ]
