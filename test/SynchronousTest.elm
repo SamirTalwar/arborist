@@ -3,6 +3,7 @@ module SynchronousTest exposing (tests)
 import Task
 
 import Arborist.Framework exposing (..)
+import Arborist.Matchers exposing (..)
 
 tests : Tests
 tests =
