@@ -8,6 +8,29 @@ import Arborist.Matchers exposing (..)
 tests : Tests
 tests =
   [
+    test "fails: recognises assertion failure" (
+      let
+        a = Ok "one" |> Task.fromResult
+        b = Ok "two" |> Task.fromResult
+      in
+        assert (assert a (equals b)) fails
+    ),
+
+    test "fails: recognises task failure" (
+      let
+        a = Err "Uh oh." |> Task.fromResult
+        b = Ok "What happened?" |> Task.fromResult
+      in
+        assert (assert a (equals b)) fails
+    ),
+
+    test "fails: fails if the assertion is successful" (
+      let
+        success = assert (Task.succeed 100) (equals (Task.succeed 100))
+      in
+        assert (assert success fails) fails
+    ),
+
     test "failsWith: recognises assertion failure" (
       let
         a = Ok "one" |> Task.fromResult

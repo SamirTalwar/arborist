@@ -25,6 +25,12 @@ isIntBetween lower upper actual =
     ("Actual", actual)
   ]
 
+fails : Matcher FailureMessages (Bool, FailureMessages)
+fails assertion =
+  assertion
+    |> Task.map (\(result, failureMessages) -> (not result, failureMessages))
+    |> (flip Task.onError) (\failureMessages -> Task.succeed (True, failureMessages))
+
 failsWith : FailureMessages -> Matcher FailureMessages (Bool, FailureMessages)
 failsWith expected assertion =
   assertion
