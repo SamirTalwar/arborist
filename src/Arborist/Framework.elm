@@ -21,7 +21,7 @@ type alias Name = String
 
 type alias FailureMessage = (String, Task String String)
 
-type alias Assertion = (Task String Bool, List FailureMessage)
+type alias Assertion = Task (List FailureMessage) (Bool, List FailureMessage)
 
 type alias Matcher a b = Task a b -> Assertion
 
@@ -30,22 +30,19 @@ type Test = Test { name : Name, assertion : Assertion }
 type alias Tests = List Test
 
 test : Name -> Assertion -> Test
-test name (assertion, failureMessages) =
-  Test { name = name, assertion = (assertion, failureMessages) }
+test name assertion =
+  Test { name = name, assertion = assertion }
 
 run : List Test -> Cmd message
 run tests =
   (flip List.map) tests (\(Test { name, assertion }) ->
-    let
-      (task, failureMessages) = assertion
-    in
-      task
-      `Task.andThen` (\testPassed ->
-        if testPassed
-          then Task.succeed (passed name)
-          else failed name failureMessages)
-      `Task.onError` (\error -> failed name ([("Error", Task.fail error)] ++ failureMessages))
-      |> Task.perform identity Native.Arborist.Framework.runTest
+    assertion
+    `Task.andThen` (\(testPassed, failureMessages) ->
+      if testPassed
+        then Task.succeed (passed name)
+        else failed name failureMessages)
+    `Task.onError` (\failureMessages -> failed name failureMessages)
+    |> Task.perform identity Native.Arborist.Framework.runTest
   )
   |> Cmd.batch
 
@@ -54,30 +51,38 @@ assert actual matcher = matcher actual
 
 not' : Matcher a b -> Matcher a b
 not' matcher actual =
-  let
-    (task, failureMessages) = matcher actual
-  in
-    (Task.map not task, failureMessages)
+  matcher actual |> Task.map (\(result, failureMessages) -> (not result, failureMessages))
 
 equals : Task a b -> Matcher a b
 equals expected actual =
-  (Task.map2 (==) expected actual |> readableErrors,
-   [("Expected", stringTask expected),
-    ("Actual", stringTask actual)])
+  let
+    messages = [
+      ("Expected", stringTask expected),
+      ("Actual", stringTask actual)
+    ]
+  in
+    Task.map2 (==) expected actual |> onFailure messages
 
 isIntBetween : Task a Int -> Task a Int -> Matcher a Int
 isIntBetween lower upper actual =
-  (Task.map3 (\l u a -> a > l && a < u) lower upper actual |> readableErrors,
-   [("Actual", stringTask actual),
-    ("Lower", stringTask lower),
-    ("Upper", stringTask upper)])
+  let
+    messages = [
+      ("Actual", stringTask actual),
+      ("Lower", stringTask lower),
+      ("Upper", stringTask upper)
+    ]
+  in
+    Task.map3 (\l u a -> a > l && a < u) lower upper actual |> onFailure messages
 
 stringTask task =
   task
     |> Task.map toString
     |> Task.mapError toString
 
-readableErrors = Task.mapError toString
+onFailure : List FailureMessage -> Task a Bool -> Assertion
+onFailure messages =
+  Task.map (\result -> (result, messages))
+  >> Task.mapError (\error -> ("Error", Task.succeed (toString error)) :: messages)
 
 passed name = green (name ++ " PASSED")
 
