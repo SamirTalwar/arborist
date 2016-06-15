@@ -19,9 +19,11 @@ import Native.Arborist.Framework
 
 type alias Name = String
 
-type alias FailureMessage = (String, Task String String)
+type alias FailureMessages = List FailureMessage
 
-type alias Assertion = Task (List FailureMessage) (Bool, List FailureMessage)
+type alias FailureMessage = (String, String)
+
+type alias Assertion = Task FailureMessages (Bool, FailureMessages)
 
 type alias Matcher a b = Task a b -> Assertion
 
@@ -33,15 +35,15 @@ test : Name -> Assertion -> Test
 test name assertion =
   Test { name = name, assertion = assertion }
 
-run : List Test -> Cmd message
+run : List Test -> Cmd String
 run tests =
   (flip List.map) tests (\(Test { name, assertion }) ->
     assertion
-    `Task.andThen` (\(testPassed, failureMessages) ->
+    |> Task.map (\(testPassed, failureMessages) ->
       if testPassed
-        then Task.succeed (passed name)
+        then passed name
         else failed name failureMessages)
-    `Task.onError` (\failureMessages -> failed name failureMessages)
+    |> Task.mapError (\failureMessages -> failed name failureMessages)
     |> Task.perform identity Native.Arborist.Framework.runTest
   )
   |> Cmd.batch
@@ -55,49 +57,50 @@ not' matcher actual =
 
 equals : Task a b -> Matcher a b
 equals expected actual =
-  let
-    messages = [
-      ("Expected", stringTask expected),
-      ("Actual", stringTask actual)
-    ]
-  in
-    Task.map2 (==) expected actual |> onFailure messages
+  Task.map2 (==) expected actual |> onFailure [
+    ("Expected", expected),
+    ("Actual", actual)
+  ]
 
 isIntBetween : Task a Int -> Task a Int -> Matcher a Int
 isIntBetween lower upper actual =
+  Task.map3 (\l u a -> a > l && a < u) lower upper actual |> onFailure [
+    ("Lower", lower),
+    ("Upper", upper),
+    ("Actual", actual)
+  ]
+
+onFailure : List (String, Task a b) -> Task c Bool -> Assertion
+onFailure messageTasks result =
   let
-    messages = [
-      ("Actual", stringTask actual),
-      ("Lower", stringTask lower),
-      ("Upper", stringTask upper)
-    ]
+    messages = sequenceMessages messageTasks
   in
-    Task.map3 (\l u a -> a > l && a < u) lower upper actual |> onFailure messages
+    Task.map2 (,) result messages
+      `Task.onError` (\error -> messages `Task.andThen` (\ms -> Task.fail (("Error", toString error) :: ms)))
 
-stringTask task =
-  task
-    |> Task.map toString
-    |> Task.mapError toString
+sequenceMessages : List (String, Task a b) -> Task c FailureMessages
+sequenceMessages messageTasks =
+  let
+    (names, valueTasks) = List.unzip messageTasks
+  in
+    valueTasks
+      |> List.map Task.toResult
+      |> Task.sequence
+      |> Task.map (\values -> List.map2 (,) names (List.map resultToString values))
 
-onFailure : List FailureMessage -> Task a Bool -> Assertion
-onFailure messages =
-  Task.map (\result -> (result, messages))
-  >> Task.mapError (\error -> ("Error", Task.succeed (toString error)) :: messages)
+resultToString result =
+  case result of
+    Ok value -> toString value
+    Err error -> "Error: " ++ toString error
 
 passed name = green (name ++ " PASSED")
 
 failed name failureMessages =
   failureMessages
-    |> List.map (\(key, valueTask) -> Task.map (renderMessage key) (Task.toResult valueTask))
-    |> Task.sequence
-    |> Task.map (String.join "")
-    |> Task.map (\messages -> name ++ " FAILED" ++ messages)
-    |> Task.map red
-
-renderMessage key value =
-  "\n  " ++ key ++ ":\n  " ++ case value of
-    Ok ok -> ok
-    Err err -> "Error: " ++ err
+    |> List.map (\(key, value) -> "\n  " ++ key ++ ":\n  " ++ value)
+    |> String.join ""
+    |> (\messages -> name ++ " FAILED" ++ messages)
+    |> red
 
 green string = "\x1b[32m" ++ string ++ reset
 
