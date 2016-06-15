@@ -11,9 +11,9 @@ import SynchronousTest
 tests : List Test
 tests =
   List.concat [
+    SynchronousTest.tests,
     AsynchronousTest.tests,
-    FailureTest.tests,
-    SynchronousTest.tests
+    FailureTest.tests
   ]
 
 main : Program Never

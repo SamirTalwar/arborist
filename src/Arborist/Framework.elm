@@ -32,24 +32,30 @@ test : Name -> Assertion -> Test
 test name assertion =
   Test { name = name, assertion = assertion }
 
-run : List Test -> Cmd String
+run : List Test -> Cmd ()
 run tests =
-  (flip List.map) tests (\(Test { name, assertion }) ->
-    assertion
-    |> Task.map (\(testPassed, failureMessages) ->
-      if testPassed
-        then passed name
-        else failed name failureMessages)
-    |> Task.mapError (\failureMessages -> failed name failureMessages)
-    |> Task.perform Native.Arborist.Framework.runTest Native.Arborist.Framework.runTest
-  )
-  |> Cmd.batch
+  tests
+    |> List.reverse
+    |> List.map (\(Test { name, assertion }) ->
+      assertion
+        |> Task.map (\(testPassed, failureMessages) ->
+          if testPassed
+            then passed name
+            else failed name failureMessages)
+        |> (flip Task.onError) (\failureMessages -> Task.succeed (failed name failureMessages))
+        |> Task.perform runTest runTest)
+    |> Cmd.batch
+
+runTest : String -> ()
+runTest = Native.Arborist.Framework.runTest >> always ()
 
 assert : Task a b -> Matcher a b -> Assertion
 assert = Arborist.Assertions.assert
 
+passed : Name -> String
 passed name = green (name ++ " PASSED")
 
+failed : Name -> FailureMessages -> String
 failed name failureMessages =
   failureMessages
     |> List.map (\(key, value) -> "\n  " ++ key ++ ":\n  " ++ value)
