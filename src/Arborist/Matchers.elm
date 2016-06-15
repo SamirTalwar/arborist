@@ -27,7 +27,12 @@ isIntBetween lower upper actual =
 
 failsWith : FailureMessages -> Matcher FailureMessages (Bool, FailureMessages)
 failsWith expected assertion =
-  assertion `Task.onError` (\actual -> assert (Task.succeed actual) (equals (Task.succeed expected)))
+  assertion
+    `Task.andThen` (\(result, actual) ->
+        if result
+          then Task.succeed (False, ("Error", "Unexpected success") :: actual)
+          else assert (Task.succeed actual) (equals (Task.succeed expected)))
+    `Task.onError` (\actual -> assert (Task.succeed actual) (equals (Task.succeed expected)))
 
 onFailure : List (String, Task a b) -> Task c Bool -> Assertion
 onFailure messageTasks result =

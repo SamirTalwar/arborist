@@ -53,5 +53,16 @@ tests =
           ("Expected", "\"foo\""),
           ("Actual", "Error: \"Oh no!\"")
         ])
+    ),
+
+    test "observes failures in the failure-with-messages matcher" (
+      let
+        success = assert (Task.succeed 100) (equals (Task.succeed 100))
+      in
+        assert (assert success (failsWith [])) (failsWith [
+          ("Error", "Unexpected success"),
+          ("Expected", "100"),
+          ("Actual", "100")
+        ])
     )
   ]
