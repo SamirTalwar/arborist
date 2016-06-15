@@ -25,25 +25,22 @@ isIntBetween lower upper actual =
     ("Actual", actual)
   ]
 
+failsWith : FailureMessages -> Matcher FailureMessages (Bool, FailureMessages)
+failsWith expected assertion =
+  assertion `Task.onError` (\actual -> assert (Task.succeed actual) (equals (Task.succeed expected)))
+
 onFailure : List (String, Task a b) -> Task c Bool -> Assertion
 onFailure messageTasks result =
   let
-    messages = sequenceMessages messageTasks
-  in
-    Task.map2 (,) result messages
-      `Task.onError` (\error -> messages `Task.andThen` (\ms -> Task.fail (("Error", toString error) :: ms)))
-
-sequenceMessages : List (String, Task a b) -> Task c FailureMessages
-sequenceMessages messageTasks =
-  let
     (names, valueTasks) = List.unzip messageTasks
-  in
-    valueTasks
+    messages = valueTasks
       |> List.map Task.toResult
       |> Task.sequence
       |> Task.map (\values -> List.map2 (,) names (List.map resultToString values))
-
-resultToString result =
-  case result of
-    Ok value -> toString value
-    Err error -> "Error: " ++ toString error
+    resultToString result =
+      case result of
+        Ok value -> toString value
+        Err error -> "Error: " ++ toString error
+  in
+    Task.map2 (,) result messages
+      `Task.onError` (\error -> messages `Task.andThen` (\ms -> Task.fail (("Error", toString error) :: ms)))

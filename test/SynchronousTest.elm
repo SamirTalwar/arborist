@@ -55,7 +55,3 @@ tests =
         ])
     )
   ]
-
-failsWith : FailureMessages -> Matcher FailureMessages (Bool, FailureMessages)
-failsWith expected assertion =
-  assertion `Task.onError` (\actual -> assert (Task.succeed actual) (equals (Task.succeed expected)))
