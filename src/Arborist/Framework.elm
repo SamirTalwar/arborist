@@ -1,10 +1,13 @@
 port module Arborist.Framework exposing (
     Assertion,
     Name,
+    FailureMessage,
+    FailureMessages,
     Test,
     Tests,
     run,
     test,
+    Matcher,
     assert,
     not',
     equals,
@@ -19,9 +22,9 @@ import Native.Arborist.Framework
 
 type alias Name = String
 
-type alias FailureMessages = List FailureMessage
-
 type alias FailureMessage = (String, String)
+
+type alias FailureMessages = List FailureMessage
 
 type alias Assertion = Task FailureMessages (Bool, FailureMessages)
 
