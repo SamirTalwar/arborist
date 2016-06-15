@@ -4,10 +4,15 @@ import Arborist.Framework exposing (..)
 import Html
 import Html.App exposing (program)
 
+import FailureTest
 import SynchronousTest
 
 tests : List Test
-tests = SynchronousTest.tests
+tests =
+  List.concat [
+    FailureTest.tests,
+    SynchronousTest.tests
+  ]
 
 main : Program Never
 main =
