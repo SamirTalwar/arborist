@@ -41,7 +41,7 @@ run tests =
         then passed name
         else failed name failureMessages)
     |> Task.mapError (\failureMessages -> failed name failureMessages)
-    |> Task.perform identity Native.Arborist.Framework.runTest
+    |> Task.perform Native.Arborist.Framework.runTest Native.Arborist.Framework.runTest
   )
   |> Cmd.batch
 
