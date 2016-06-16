@@ -33,7 +33,7 @@
       {
         "name": "run",
         "comment": " Runs test cases in parallel, and prints the output to the command line. ",
-        "type": "List Arborist.Framework.Test -> Platform.Program Basics.Never"
+        "type": "List Arborist.Framework.Test -> (String -> Platform.Cmd.Cmd String) -> Platform.Program Basics.Never"
       },
       {
         "name": "test",

@@ -1,4 +1,4 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Arborist.Framework exposing (..)
 
@@ -16,5 +16,7 @@ tests =
     BetweenTest.tests
   ]
 
+port output : String -> Cmd message
+
 main : Program Never
-main = run tests
+main = run tests output

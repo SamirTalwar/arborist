@@ -1,4 +1,4 @@
-port module Arborist.Framework exposing (
+module Arborist.Framework exposing (
     Test,
     Tests,
     Name,
@@ -44,11 +44,9 @@ type alias Assertion = Arborist.Assertions.Assertion
 type alias FailureMessage = Arborist.Assertions.FailureMessage
 type alias FailureMessages = Arborist.Assertions.FailureMessages
 
-port output : String -> Cmd message
-
 {-| Runs test cases in parallel, and prints the output to the command line. -}
-run : List Test -> Program Never
-run tests =
+run : List Test -> (String -> Cmd String) -> Program Never
+run tests output =
   program {
     init = ((), constructTests tests),
     update = \message model -> ((), output message),
