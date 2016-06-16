@@ -2,9 +2,6 @@ port module Arborist.Framework exposing (
     Test,
     Tests,
     Name,
-    Assertion,
-    FailureMessage,
-    FailureMessages,
     run,
     test,
     assert
