@@ -1,6 +1,5 @@
 # Artifacts
 /build
-/src/Native
 
 # Dependencies
 /elm-stuff/build-artifacts

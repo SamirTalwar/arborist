@@ -1,15 +1,43 @@
 module Arborist.Matchers exposing (..)
 
+{-| Provides a set of matchers used for assertions.
+
+# Types
+@docs Matcher
+
+# Matchers
+@docs equals, isIntBetween
+@docs not'
+
+# Helpers
+
+The helpers are generally only to be used when constructing your own matchers.
+
+@docs fails, failsWith
+@docs onFailure, sequenceMessages
+
+-}
+
 import Arborist.Assertions exposing (..)
 
 import Task exposing (Task)
 
+{-| A matcher is a function that accepts a value and asserts some property about it.
+-}
 type alias Matcher a b = Task a b -> Assertion
 
+{-| Negates another matcher.
+
+    assert (Task.succeed 3) (not' (equals (Task.succeed 4)))
+-}
 not' : Matcher a b -> Matcher a b
 not' matcher actual =
   matcher actual |> Task.map (\(result, failureMessages) -> (not result, failureMessages))
 
+{-| Asserts that two values are equal.
+
+    assert (Task.succeed "Hello!") (equals (Task.succeed "Hello!"))
+-}
 equals : Task a b -> Matcher a b
 equals expected actual =
   Task.map2 (==) expected actual |> onFailure (sequenceMessages [
@@ -17,6 +45,10 @@ equals expected actual =
     ("Actual", actual)
   ])
 
+{-| Asserts an integer is between two others, inclusive.
+
+    assert (Task.succeed 24) (isIntBetween (Task.succeed 12) (Task.succeed 36))
+-}
 isIntBetween : Task a Int -> Task a Int -> Matcher a Int
 isIntBetween lower upper actual =
   Task.map3 (\l u a -> l <= a && a <= u) lower upper actual
@@ -32,12 +64,23 @@ isIntBetween lower upper actual =
              ("Actual", actual)
            ]))
 
+{-| Asserts that another assertion fails.
+
+    assert (assert (Task.succeed 1) (equals (Task.succeed 2))) fails
+-}
 fails : Matcher FailureMessages (Bool, FailureMessages)
 fails assertion =
   assertion
     |> Task.map (\(result, failureMessages) -> (not result, failureMessages))
     |> (flip Task.onError) (\failureMessages -> Task.succeed (True, failureMessages))
 
+{-| Asserts that another assertion fails with specific failure messages.
+
+    assert (assert (Task.succeed True) (equals (Task.succeed False))) failsWith [
+      ("Expected", False),
+      ("Actual", True)
+    ]
+-}
 failsWith : FailureMessages -> Matcher FailureMessages (Bool, FailureMessages)
 failsWith expected assertion =
   assertion
@@ -47,6 +90,20 @@ failsWith expected assertion =
           else assert (Task.succeed actual) (equals (Task.succeed expected)))
     `Task.onError` (\actual -> assert (Task.succeed actual) (equals (Task.succeed expected)))
 
+{-| When constructing a matcher, adds failure messages.
+
+If the matching operation results in an error, the error message is included in
+the failure messages as the first item, with a name of "Error".
+
+This function is often used with `sequenceMessages`.
+
+    equals : Task a b -> Matcher a b
+    equals expected actual =
+      Task.map2 (==) expected actual |> onFailure (sequenceMessages [
+        ("Expected", expected),
+        ("Actual", actual)
+      ])
+-}
 onFailure : Task a FailureMessages -> Task a Bool -> Assertion
 onFailure messages result =
   let
@@ -58,6 +115,14 @@ onFailure messages result =
           `Task.andThen` \ms ->
             Task.fail (("Error", toString error) :: ms)
 
+{-| Converts a list of failure messages which have value tasks into a task of failure messages.
+
+    let
+      a = Task.succeed 1
+      b = Task.succeed 2
+    in
+      assert (sequenceMessages [("A", a), ("B", b)]) (equals (Task.succeed [("A", 1), ("B", 2)]))
+-}
 sequenceMessages : List (String, Task a b) -> Task never FailureMessages
 sequenceMessages messageTasks =
   let
