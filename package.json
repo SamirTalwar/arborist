@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A test framework for asynchronous Elm code.",
   "bin": {
-    "arborist": "./bin/run.js"
+    "arborist": "./bin/run"
   },
   "scripts": {
     "test": "make test"
