@@ -15,8 +15,5 @@
   "homepage": "https://github.com/SamirTalwar/arborist#readme",
   "bugs": {
     "url": "https://github.com/SamirTalwar/arborist/issues"
-  },
-  "devDependencies": {
-    "browserify": "^13.0.1"
   }
 }
