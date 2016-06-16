@@ -103,8 +103,11 @@ failed name failureMessages =
     |> (\messages -> name ++ " FAILED" ++ messages)
     |> red
 
+green : String -> String
 green string = "\x1b[32m" ++ string ++ reset
 
+red : String -> String
 red string = "\x1b[31m" ++ string ++ reset
 
+reset : String
 reset = "\x1b[0m"
