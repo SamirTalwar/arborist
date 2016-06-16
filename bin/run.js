@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const child_process = require('child_process');
 const crypto = require('crypto');
 const os = require('os');
@@ -9,3 +11,4 @@ child_process.execFileSync('elm', ['make', '--warn', '--yes', '--output', output
 global.window = global;
 let Elm = require(outputFile);
 let app = Elm.Main.worker();
+app.ports.output.subscribe(console.log);

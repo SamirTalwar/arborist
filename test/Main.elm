@@ -1,4 +1,4 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Arborist.Framework exposing (..)
 import Html
@@ -18,11 +18,13 @@ tests =
     BetweenTest.tests
   ]
 
+port output : String -> Cmd message
+
 main : Program Never
 main =
   program {
     init = ((), run tests),
-    update = \message model -> (model, Cmd.none),
+    update = \message model -> ((), output message),
     view = \model -> Html.div [] [],
     subscriptions = always Sub.none
   }

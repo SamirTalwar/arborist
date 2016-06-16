@@ -16,7 +16,6 @@ import Task exposing (Task)
 
 import Arborist.Assertions
 import Arborist.Matchers exposing (Matcher)
-import Native.Arborist.Framework
 
 type alias Name = String
 
@@ -32,7 +31,7 @@ test : Name -> Assertion -> Test
 test name assertion =
   Test { name = name, assertion = assertion }
 
-run : List Test -> Cmd ()
+run : List Test -> Cmd String
 run tests =
   tests
     |> List.reverse
@@ -43,11 +42,8 @@ run tests =
             then passed name
             else failed name failureMessages)
         |> (flip Task.onError) (\failureMessages -> Task.succeed (failed name failureMessages))
-        |> Task.perform runTest runTest)
+        |> Task.perform identity identity)
     |> Cmd.batch
-
-runTest : String -> ()
-runTest = Native.Arborist.Framework.runTest >> always ()
 
 assert : Task a b -> Matcher a b -> Assertion
 assert = Arborist.Assertions.assert
