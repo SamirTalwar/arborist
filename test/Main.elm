@@ -7,6 +7,11 @@ import BetweenTest
 import FailureTest
 import SynchronousTest
 
+port output : String -> Cmd message
+
+main : Program Never
+main = run tests output
+
 tests : List Test
 tests =
   List.concat [
@@ -15,8 +20,3 @@ tests =
     FailureTest.tests,
     BetweenTest.tests
   ]
-
-port output : String -> Cmd message
-
-main : Program Never
-main = run tests output
