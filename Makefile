@@ -8,6 +8,3 @@ build/arborist.js: $(PRODUCTION_FILES)
 .PHONY: test
 test: bin/run build/arborist.js $(TEST_FILES)
 	bin/run $(TEST_FILES)
-
-node_modules: package.json
-	npm install
