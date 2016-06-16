@@ -1,4 +1,4 @@
-module Arborist.Framework exposing (
+port module Arborist.Framework exposing (
     Test,
     Tests,
     Name,
@@ -10,6 +10,8 @@ module Arborist.Framework exposing (
     assert
   )
 
+import Html
+import Html.App exposing (program)
 import List
 import String
 import Task exposing (Task)
@@ -27,12 +29,23 @@ type alias Assertion = Arborist.Assertions.Assertion
 type alias FailureMessage = Arborist.Assertions.FailureMessage
 type alias FailureMessages = Arborist.Assertions.FailureMessages
 
+port output : String -> Cmd message
+
+run : List Test -> Program Never
+run tests =
+  program {
+    init = ((), constructTests tests),
+    update = \message model -> ((), output message),
+    view = \model -> Html.div [] [],
+    subscriptions = always Sub.none
+  }
+
 test : Name -> Assertion -> Test
 test name assertion =
   Test { name = name, assertion = assertion }
 
-run : List Test -> Cmd String
-run tests =
+constructTests : List Test -> Cmd String
+constructTests tests =
   tests
     |> List.reverse
     |> List.map (\(Test { name, assertion }) ->

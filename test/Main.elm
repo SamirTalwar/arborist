@@ -1,8 +1,6 @@
-port module Main exposing (main)
+module Main exposing (main)
 
 import Arborist.Framework exposing (..)
-import Html
-import Html.App exposing (program)
 
 import AsynchronousTest
 import BetweenTest
@@ -18,13 +16,5 @@ tests =
     BetweenTest.tests
   ]
 
-port output : String -> Cmd message
-
 main : Program Never
-main =
-  program {
-    init = ((), run tests),
-    update = \message model -> ((), output message),
-    view = \model -> Html.div [] [],
-    subscriptions = always Sub.none
-  }
+main = run tests
