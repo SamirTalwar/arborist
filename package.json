@@ -2,7 +2,9 @@
   "name": "arborist",
   "version": "0.1.0",
   "description": "A test framework for asynchronous Elm code.",
-  "main": "src/run.js",
+  "bin": {
+    "arborist": "./bin/run.js"
+  },
   "scripts": {
     "test": "make test"
   },
