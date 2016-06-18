@@ -69,13 +69,7 @@ constructTests tests =
   tests
     |> List.reverse
     |> List.map (\(Test { name, assertion }) ->
-      assertion
-        |> Task.map (\(testPassed, failureMessages) ->
-          if testPassed
-            then passed name
-            else failed name failureMessages)
-        |> (flip Task.onError) (\failureMessages -> Task.succeed (failed name failureMessages))
-        |> Task.perform identity identity)
+      Task.perform (failed name) (uncurry (check name)) assertion)
     |> Cmd.batch
 
 {-| `assert` runs a matcher against a value. All values are generally wrapped in tasks.
@@ -89,6 +83,12 @@ constructTests tests =
 -}
 assert : Task a b -> Matcher a b -> Assertion
 assert = Arborist.Assertions.assert
+
+check : Name -> Bool -> FailureMessages -> String
+check name testPassed failureMessages =
+  if testPassed
+    then passed name
+    else failed name failureMessages
 
 passed : Name -> String
 passed name = green (name ++ " PASSED")
