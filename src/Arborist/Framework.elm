@@ -2,6 +2,7 @@ module Arborist.Framework exposing (
     Test,
     Tests,
     Name,
+    TestResult,
     run,
     test,
     assert
@@ -19,20 +20,16 @@ tasks, which are executed in parallel and reported on the command line.
 @docs assert
 
 # Running tests
-@docs run
+@docs run, TestResult
 -}
 
 import Html
 import Html.App exposing (program)
 import List
-import String
 import Task exposing (Task)
 
 import Arborist.Assertions
 import Arborist.Matchers exposing (Matcher)
-
-{-| The name of a test. -}
-type alias Name = String
 
 {-| A test case, usually constructed with the `test` function. -}
 type Test = Test { name : Name, assertion : Assertion }
@@ -40,12 +37,18 @@ type Test = Test { name : Name, assertion : Assertion }
 {-| A list of `Test` cases. -}
 type alias Tests = List Test
 
+{-| The name of a test. -}
+type alias Name = String
+
+{-| A test result. -}
+type alias TestResult = { passed : Bool, name : Name, failureMessages : FailureMessages }
+
 type alias Assertion = Arborist.Assertions.Assertion
 type alias FailureMessage = Arborist.Assertions.FailureMessage
 type alias FailureMessages = Arborist.Assertions.FailureMessages
 
 {-| Runs test cases in parallel, and prints the output to the command line. -}
-run : List Test -> (String -> Cmd String) -> Program Never
+run : List Test -> (TestResult -> Cmd TestResult) -> Program Never
 run tests output =
   program {
     init = ((), constructTests tests),
@@ -64,7 +67,7 @@ test : Name -> Assertion -> Test
 test name assertion =
   Test { name = name, assertion = assertion }
 
-constructTests : List Test -> Cmd String
+constructTests : List Test -> Cmd TestResult
 constructTests tests =
   tests
     |> List.reverse
@@ -84,28 +87,14 @@ constructTests tests =
 assert : Task a b -> Matcher a b -> Assertion
 assert = Arborist.Assertions.assert
 
-check : Name -> Bool -> FailureMessages -> String
+check : Name -> Bool -> FailureMessages -> TestResult
 check name testPassed failureMessages =
   if testPassed
     then passed name
     else failed name failureMessages
 
-passed : Name -> String
-passed name = green (name ++ " PASSED")
+passed : Name -> TestResult
+passed name = { passed = True, name = name, failureMessages = [] }
 
-failed : Name -> FailureMessages -> String
-failed name failureMessages =
-  failureMessages
-    |> List.map (\(key, value) -> "\n  " ++ key ++ ":\n  " ++ value)
-    |> String.join ""
-    |> (\messages -> name ++ " FAILED" ++ messages)
-    |> red
-
-green : String -> String
-green string = "\x1b[32m" ++ string ++ reset
-
-red : String -> String
-red string = "\x1b[31m" ++ string ++ reset
-
-reset : String
-reset = "\x1b[0m"
+failed : Name -> FailureMessages -> TestResult
+failed name failureMessages = { passed = False, name = name, failureMessages = failureMessages }

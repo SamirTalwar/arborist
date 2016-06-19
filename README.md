@@ -29,7 +29,7 @@ import Arborist.Matchers exposing (..)
 import Process
 import Task
 
-port output : String -> Cmd message
+port output : TestResult -> Cmd message
 
 main : Program Never
 main = run tests output

@@ -4,11 +4,41 @@ const child_process = require('child_process');
 const crypto = require('crypto');
 const os = require('os');
 
-let inputFiles = process.argv.slice(2);
-let outputFile = os.tmpdir() + '/' + 'arborist-' + crypto.randomBytes(16).readUInt32LE(0) + '.js';
-child_process.execFileSync('elm', ['make', '--warn', '--yes', '--output', outputFile].concat(inputFiles));
+function main() {
+    let inputFiles = process.argv.slice(2);
+    let outputFile = compile(inputFiles);
 
-global.window = global;
-let Elm = require(outputFile);
-let app = Elm.Main.worker();
-app.ports.output.subscribe(console.log);
+    global.window = global;
+    let Elm = require(outputFile);
+    let app = Elm.Main.worker();
+    app.ports.output.subscribe(displayTestResult);
+}
+
+function compile(inputFiles) {
+    let outputFile = os.tmpdir() + '/' + 'arborist-' + crypto.randomBytes(16).readUInt32LE(0) + '.js';
+    child_process.execFileSync('elm', ['make', '--warn', '--yes', '--output', outputFile].concat(inputFiles));
+    return outputFile;
+}
+
+function displayTestResult(result) {
+    let {passed, name, failureMessages} = result;
+    if (passed) {
+        console.log(green(`${name} PASSED`));
+    } else {
+        console.log(red(`${name} FAILED${displayMessages(failureMessages)}`));
+    }
+}
+
+function displayMessages(messages) {
+  return messages.map(message => `\n  ${message[0]}:\n  ${message[1]}`).join('');
+}
+
+function green(string) {
+    return `\x1b[32m${string}\x1b[0m`;
+}
+
+function red(string) {
+    return `\x1b[31m${string}\x1b[0m`;
+}
+
+main();

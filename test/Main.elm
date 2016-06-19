@@ -7,7 +7,7 @@ import BetweenTest
 import FailureTest
 import SynchronousTest
 
-port output : String -> Cmd message
+port output : TestResult -> Cmd message
 
 main : Program Never
 main = run tests output

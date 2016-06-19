@@ -1,13 +1,19 @@
 [
   {
     "name": "Arborist.Framework",
-    "comment": " Arborist is a test framework for asynchronous code.\n\nIt is intended for use mostly with Tasks. Tests are defined as assertions on\ntasks, which are executed in parallel and reported on the command line.\n\n# Declaring tests\n@docs Test, Tests, Name, test\n\n# Assertions\n@docs assert\n\n# Running tests\n@docs run\n",
+    "comment": " Arborist is a test framework for asynchronous code.\n\nIt is intended for use mostly with Tasks. Tests are defined as assertions on\ntasks, which are executed in parallel and reported on the command line.\n\n# Declaring tests\n@docs Test, Tests, Name, test\n\n# Assertions\n@docs assert\n\n# Running tests\n@docs run, TestResult\n",
     "aliases": [
       {
         "name": "Name",
         "comment": " The name of a test. ",
         "args": [],
         "type": "String"
+      },
+      {
+        "name": "TestResult",
+        "comment": " A test result. ",
+        "args": [],
+        "type": "{ passed : Bool , name : Arborist.Framework.Name , failureMessages : Arborist.Framework.FailureMessages }"
       },
       {
         "name": "Tests",
@@ -33,7 +39,7 @@
       {
         "name": "run",
         "comment": " Runs test cases in parallel, and prints the output to the command line. ",
-        "type": "List Arborist.Framework.Test -> (String -> Platform.Cmd.Cmd String) -> Platform.Program Basics.Never"
+        "type": "List Arborist.Framework.Test -> (Arborist.Framework.TestResult -> Platform.Cmd.Cmd Arborist.Framework.TestResult) -> Platform.Program Basics.Never"
       },
       {
         "name": "test",
