@@ -34,11 +34,19 @@ function displayMessages(messages) {
 }
 
 function green(string) {
-    return `\x1b[32m${string}\x1b[0m`;
+    return color('\x1b[32m', string);
 }
 
 function red(string) {
-    return `\x1b[31m${string}\x1b[0m`;
+    return color('\x1b[31m', string);
+}
+
+function color(code, string) {
+    if (process.stdout.isTTY) {
+        return `${code}${string}\x1b[0m`;
+    } else {
+        return string;
+    }
 }
 
 main();
