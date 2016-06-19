@@ -1,4 +1,5 @@
 # Arborist
+[![Build Status](https://travis-ci.org/SamirTalwar/arborist.svg?branch=master)](https://travis-ci.org/SamirTalwar/arborist)
 
 Arborist is a test framework for asynchronous Elm code.
 
