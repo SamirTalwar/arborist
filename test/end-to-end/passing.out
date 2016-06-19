@@ -1,0 +1,5 @@
+[32mperforms simple equality checks PASSED[0m
+[32mnegates matchers PASSED[0m
+[32mverifies that an integer is between two others PASSED[0m
+[32mwaits for tasks to fail PASSED[0m
+[32mwaits for tasks to succeed PASSED[0m
