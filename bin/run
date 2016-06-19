@@ -11,7 +11,12 @@ function main() {
     global.window = global;
     let Elm = require(outputFile);
     let app = Elm.Main.worker();
-    app.ports.output.subscribe(displayTestResult);
+    app.ports.output.subscribe(result => {
+        displayTestResult(result);
+        if (!result.passed) {
+            process.exitCode = 1;
+        }
+    });
 }
 
 function compile(inputFiles) {
