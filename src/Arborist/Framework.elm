@@ -40,7 +40,7 @@ type alias Tests = List Test
 {-| The name of a test. -}
 type alias Name = String
 
-{-| A test result. -}
+{-| A test result, to be used by the test runner via the "output" port. -}
 type alias TestResult = { passed : Bool, name : Name, failureMessages : FailureMessages }
 
 type alias Assertion = Arborist.Assertions.Assertion

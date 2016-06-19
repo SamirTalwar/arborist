@@ -11,7 +11,7 @@
       },
       {
         "name": "TestResult",
-        "comment": " A test result. ",
+        "comment": " A test result, to be used by the test runner via the \"output\" port. ",
         "args": [],
         "type": "{ passed : Bool , name : Arborist.Framework.Name , failureMessages : Arborist.Framework.FailureMessages }"
       },
