@@ -1,6 +1,7 @@
-[32msome tests pass PASSED[0m
-[31mbut some tests fail FAILED
+[32msome tests pass PASSED
+[0m[31mbut some tests fail FAILED
   Expected:
   False
   Actual:
-  True[0m
+  True
+[0m

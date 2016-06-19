@@ -23,9 +23,9 @@ function compile(inputFiles) {
 function displayTestResult(result) {
     let {passed, name, failureMessages} = result;
     if (passed) {
-        console.log(green(`${name} PASSED`));
+        process.stdout.write(green(`${name} PASSED\n`));
     } else {
-        console.log(red(`${name} FAILED${displayMessages(failureMessages)}`));
+        process.stdout.write(red(`${name} FAILED${displayMessages(failureMessages)}\n`));
     }
 }
 
