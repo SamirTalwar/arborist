@@ -1,6 +1,5 @@
 PRODUCTION_FILES = $(shell find src -name '*.elm')
 TEST_FILES = $(shell find test-unit -name '*.elm')
-END_TO_END_TEST_FILES = $(shell find test-end-to-end -type f)
 SMOKE = ./Smoke/bin/smoke
 
 build/arborist.js: $(PRODUCTION_FILES)
@@ -11,10 +10,10 @@ build/arborist.js: $(PRODUCTION_FILES)
 
 test: unit-test end-to-end-test
 
-unit-test: bin/run build/arborist.js $(TEST_FILES)
+unit-test:
 	bin/run $(TEST_FILES)
 
-end-to-end-test: bin/run build/arborist.js $(SMOKE) $(END_TO_END_TEST_FILES)
+end-to-end-test:
 	$(SMOKE) bin/run test-end-to-end
 
 $(SMOKE):
