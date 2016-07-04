@@ -1,19 +1,13 @@
 [
   {
     "name": "Arborist.Framework",
-    "comment": " Arborist is a test framework for asynchronous code.\n\nIt is intended for use mostly with Tasks. Tests are defined as assertions on\ntasks, which are executed in parallel and reported on the command line.\n\n# Declaring tests\n@docs Test, Tests, Name, test\n\n# Assertions\n@docs assert\n\n# Running tests\n@docs run, TestResult\n",
+    "comment": " Arborist is a test framework for asynchronous code.\n\nIt is intended for use mostly with Tasks. Tests are defined as assertions on\ntasks, which are executed in parallel and reported on the command line.\n\n# Declaring tests\n@docs Test, Tests, Name, test\n\n# Assertions\n@docs assert\n",
     "aliases": [
       {
         "name": "Name",
         "comment": " The name of a test. ",
         "args": [],
         "type": "String"
-      },
-      {
-        "name": "TestResult",
-        "comment": " A test result, to be used by the test runner via the \"output\" port. ",
-        "args": [],
-        "type": "{ passed : Bool , name : Arborist.Framework.Name , failureMessages : Arborist.Framework.FailureMessages }"
       },
       {
         "name": "Tests",
@@ -27,24 +21,26 @@
         "name": "Test",
         "comment": " A test case, usually constructed with the `test` function. ",
         "args": [],
-        "cases": []
+        "cases": [
+          [
+            "Test",
+            [
+              "{ name : Arborist.Framework.Name , assertion : Arborist.Assertions.Assertion }"
+            ]
+          ]
+        ]
       }
     ],
     "values": [
       {
         "name": "assert",
         "comment": " `assert` runs a matcher against a value. All values are generally wrapped in tasks.\n\n    let\n      a = Task.succeed 7\n      b = Task.succeed 3\n      c = Task.map2 (+) a b\n    in\n      assert c (equals (Task.succeed 10))\n",
-        "type": "Task.Task a b -> Arborist.Matchers.Matcher a b -> Arborist.Framework.Assertion"
-      },
-      {
-        "name": "run",
-        "comment": " Runs test cases in parallel, and prints the output to the command line. ",
-        "type": "List Arborist.Framework.Test -> (Arborist.Framework.TestResult -> Platform.Cmd.Cmd Arborist.Framework.TestResult) -> Platform.Program Basics.Never"
+        "type": "Task.Task a b -> Arborist.Matchers.Matcher a b -> Arborist.Assertions.Assertion"
       },
       {
         "name": "test",
         "comment": " Defines a test case.\n\n    test \"One plus one is most definitely two\" (\n      assert (Task.succeed (1 + 1)) (equals (Task.succeed 2))\n    )\n",
-        "type": "Arborist.Framework.Name -> Arborist.Framework.Assertion -> Arborist.Framework.Test"
+        "type": "Arborist.Framework.Name -> Arborist.Assertions.Assertion -> Arborist.Framework.Test"
       }
     ],
     "generated-with-elm-version": "0.17.0"

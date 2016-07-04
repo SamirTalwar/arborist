@@ -1,1 +1,2 @@
-test-end-to-end/passing/Main.elm
+Test.Arborist.EndToEnd.Passing.tests
+test-end-to-end/passing/Tests.elm

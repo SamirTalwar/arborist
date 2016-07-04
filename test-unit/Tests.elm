@@ -1,4 +1,4 @@
-port module Main exposing (main)
+module Test.Arborist.Unit exposing (tests)
 
 import Arborist.Framework exposing (..)
 
@@ -6,11 +6,6 @@ import AsynchronousTest
 import BetweenTest
 import FailureTest
 import SynchronousTest
-
-port output : TestResult -> Cmd message
-
-main : Program Never
-main = run tests output
 
 tests : List Test
 tests =

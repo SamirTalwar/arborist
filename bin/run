@@ -2,15 +2,26 @@
 
 const child_process = require('child_process');
 const crypto = require('crypto');
+const fs = require('fs');
 const os = require('os');
+const path = require('path');
+
+const RunFile = __dirname + '/Run.elm';
 
 function main() {
-    let inputFiles = process.argv.slice(2);
-    let outputFile = compile(inputFiles);
+    let [, testModule, testFunction] = process.argv[2].match(/^(.+)\.([^\.]+)$/);
+    let runNumber = randomNumber();
+    let runFile = template(RunFile, {
+        testModule,
+        testFunction,
+        randomNumber: runNumber
+    });
+    let inputFiles = process.argv.slice(3);
+    let outputFile = compile([runFile].concat(inputFiles));
 
     global.window = global;
     let Elm = require(outputFile);
-    let app = Elm.Main.worker();
+    let app = Elm.Arborist[`Run_${runNumber}`].worker();
     app.ports.output.subscribe(result => {
         displayTestResult(result);
         if (!result.passed) {
@@ -19,10 +30,30 @@ function main() {
     });
 }
 
+function template(file, substitutions) {
+    let extension = path.extname(file);
+    let basename = path.basename(file, extension);
+    let generatedFile = randomFile(basename, extension);
+    let templateString = fs.readFileSync(file, 'utf-8');
+    let contents = Object.keys(substitutions).reduce(
+        (text, name) => text.replace(`\${${name}}`, substitutions[name])
+    , templateString);
+    fs.writeFileSync(generatedFile, contents, 'utf-8');
+    return generatedFile;
+}
+
 function compile(inputFiles) {
-    let outputFile = `${os.tmpdir()}/arborist-${crypto.randomBytes(16).readUInt32LE(0)}.js`;
+    let outputFile = randomFile('arborist-test', '.js');
     child_process.execFileSync('elm', ['make', '--warn', '--yes', '--output', outputFile].concat(inputFiles));
     return outputFile;
+}
+
+function randomFile(prefix, extension) {
+    return `${os.tmpdir()}/${prefix}-${randomNumber()}${extension}`;
+}
+
+function randomNumber() {
+    return crypto.randomBytes(16).readUInt32LE(0);
 }
 
 function displayTestResult(result) {

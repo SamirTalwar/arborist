@@ -11,7 +11,7 @@ build/arborist.js: $(PRODUCTION_FILES)
 test: unit-test end-to-end-test
 
 unit-test:
-	bin/run $(TEST_FILES)
+	bin/run Test.Arborist.Unit.tests $(TEST_FILES)
 
 end-to-end-test:
 	$(SMOKE) bin/run test-end-to-end

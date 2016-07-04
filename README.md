@@ -20,20 +20,15 @@ The latest version of Arborist is v1.0.0.
 
 ## Writing tests
 
-Define a test file named *test/Main.elm* as follows. The first few lines are boilerplate; after the `main` function, add your own tests.
+Define a test file as follows, with your own test cases.
 
 ```elm
-port module Main exposing (main)
+module My.Wonderful.Tests exposing (tests)
 
 import Arborist.Framework exposing (..)
 import Arborist.Matchers exposing (..)
 import Process
 import Task
-
-port output : TestResult -> Cmd message
-
-main : Program Never
-main = run tests output
 
 tests : List Test
 tests =
@@ -90,7 +85,7 @@ Please submit issues and pull requests with ideas for more!
 
 You'll need to use `node` to run the tests as follows:
 
-	node ./elm-stuff/packages/SamirTalwar/arborist/1.0.0/bin/run test/Main.elm
+	node ./elm-stuff/packages/SamirTalwar/arborist/1.0.0/bin/run My.Wonderful.Tests.tests test/Tests.elm
 
 Arborist compiles the test files for you using `elm make`, so you don't need to add them to your `"source-directories"` section of *elm-package.json*.
 

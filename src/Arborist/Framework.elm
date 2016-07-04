@@ -1,9 +1,7 @@
 module Arborist.Framework exposing (
-    Test,
+    Test (..),
     Tests,
     Name,
-    TestResult,
-    run,
     test,
     assert
   )
@@ -18,17 +16,11 @@ tasks, which are executed in parallel and reported on the command line.
 
 # Assertions
 @docs assert
-
-# Running tests
-@docs run, TestResult
 -}
 
-import Html
-import Html.App exposing (program)
-import List
 import Task exposing (Task)
 
-import Arborist.Assertions
+import Arborist.Assertions exposing (Assertion)
 import Arborist.Matchers exposing (Matcher)
 
 {-| A test case, usually constructed with the `test` function. -}
@@ -40,23 +32,6 @@ type alias Tests = List Test
 {-| The name of a test. -}
 type alias Name = String
 
-{-| A test result, to be used by the test runner via the "output" port. -}
-type alias TestResult = { passed : Bool, name : Name, failureMessages : FailureMessages }
-
-type alias Assertion = Arborist.Assertions.Assertion
-type alias FailureMessage = Arborist.Assertions.FailureMessage
-type alias FailureMessages = Arborist.Assertions.FailureMessages
-
-{-| Runs test cases in parallel, and prints the output to the command line. -}
-run : List Test -> (TestResult -> Cmd TestResult) -> Program Never
-run tests output =
-  program {
-    init = ((), constructTests tests),
-    update = \message model -> ((), output message),
-    view = \model -> Html.div [] [],
-    subscriptions = always Sub.none
-  }
-
 {-| Defines a test case.
 
     test "One plus one is most definitely two" (
@@ -66,14 +41,6 @@ run tests output =
 test : Name -> Assertion -> Test
 test name assertion =
   Test { name = name, assertion = assertion }
-
-constructTests : List Test -> Cmd TestResult
-constructTests tests =
-  tests
-    |> List.reverse
-    |> List.map (\(Test { name, assertion }) ->
-      Task.perform (failed name) (uncurry (check name)) assertion)
-    |> Cmd.batch
 
 {-| `assert` runs a matcher against a value. All values are generally wrapped in tasks.
 
@@ -86,15 +53,3 @@ constructTests tests =
 -}
 assert : Task a b -> Matcher a b -> Assertion
 assert = Arborist.Assertions.assert
-
-check : Name -> Bool -> FailureMessages -> TestResult
-check name testPassed failureMessages =
-  if testPassed
-    then passed name
-    else failed name failureMessages
-
-passed : Name -> TestResult
-passed name = { passed = True, name = name, failureMessages = [] }
-
-failed : Name -> FailureMessages -> TestResult
-failed name failureMessages = { passed = False, name = name, failureMessages = failureMessages }

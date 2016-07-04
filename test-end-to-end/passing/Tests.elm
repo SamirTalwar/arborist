@@ -1,14 +1,9 @@
-port module Main exposing (main)
+module Test.Arborist.EndToEnd.Passing exposing (tests)
 
 import Arborist.Framework exposing (..)
 import Arborist.Matchers exposing (..)
 import Process
 import Task
-
-port output : TestResult -> Cmd message
-
-main : Program Never
-main = run tests output
 
 tests : List Test
 tests =
