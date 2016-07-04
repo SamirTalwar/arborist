@@ -24,7 +24,7 @@ import Arborist.Assertions exposing (Assertion)
 import Arborist.Matchers exposing (Matcher)
 
 {-| A test case, usually constructed with the `test` function. -}
-type Test = Test { name : Name, assertion : Assertion }
+type Test = Test Name Assertion
 
 {-| A list of `Test` cases. -}
 type alias Tests = List Test
@@ -39,8 +39,7 @@ type alias Name = String
     )
 -}
 test : Name -> Assertion -> Test
-test name assertion =
-  Test { name = name, assertion = assertion }
+test = Test
 
 {-| `assert` runs a matcher against a value. All values are generally wrapped in tasks.
 

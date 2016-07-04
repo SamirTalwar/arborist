@@ -30,7 +30,7 @@ constructTests : List Test -> Cmd TestResult
 constructTests tests =
   tests
     |> List.reverse
-    |> List.map (\(Test { name, assertion }) ->
+    |> List.map (\(Test name assertion) ->
       Task.perform (failed name) (uncurry (check name)) assertion)
     |> Cmd.batch
 
