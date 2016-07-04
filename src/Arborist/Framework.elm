@@ -49,6 +49,8 @@ test = Test
       c = Task.map2 (+) a b
     in
       assert c (equals (Task.succeed 10))
+
+This function is re-exported from `Arborist.Assertions` for your convenience.
 -}
 assert : Task a b -> Matcher a b -> Assertion
 assert = Arborist.Assertions.assert
