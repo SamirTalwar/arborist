@@ -20,7 +20,7 @@ function main() {
 }
 
 function compile(inputFiles) {
-    let outputFile = os.tmpdir() + '/' + 'arborist-' + crypto.randomBytes(16).readUInt32LE(0) + '.js';
+    let outputFile = `${os.tmpdir()}/arborist-${crypto.randomBytes(16).readUInt32LE(0)}.js`;
     child_process.execFileSync('elm', ['make', '--warn', '--yes', '--output', outputFile].concat(inputFiles));
     return outputFile;
 }
