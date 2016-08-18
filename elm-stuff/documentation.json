@@ -25,7 +25,8 @@
           [
             "Test",
             [
-              "{ name : Arborist.Framework.Name , assertion : Arborist.Assertions.Assertion }"
+              "Arborist.Framework.Name",
+              "Arborist.Assertions.Assertion"
             ]
           ]
         ]
@@ -34,7 +35,7 @@
     "values": [
       {
         "name": "assert",
-        "comment": " `assert` runs a matcher against a value. All values are generally wrapped in tasks.\n\n    let\n      a = Task.succeed 7\n      b = Task.succeed 3\n      c = Task.map2 (+) a b\n    in\n      assert c (equals (Task.succeed 10))\n",
+        "comment": " `assert` runs a matcher against a value. All values are generally wrapped in tasks.\n\n    let\n      a = Task.succeed 7\n      b = Task.succeed 3\n      c = Task.map2 (+) a b\n    in\n      assert c (equals (Task.succeed 10))\n\nThis function is re-exported from `Arborist.Assertions` for your convenience.\n",
         "type": "Task.Task a b -> Arborist.Matchers.Matcher a b -> Arborist.Assertions.Assertion"
       },
       {
@@ -43,7 +44,7 @@
         "type": "Arborist.Framework.Name -> Arborist.Assertions.Assertion -> Arborist.Framework.Test"
       }
     ],
-    "generated-with-elm-version": "0.17.0"
+    "generated-with-elm-version": "0.17.1"
   },
   {
     "name": "Arborist.Matchers",
@@ -97,7 +98,7 @@
         "type": "List ( String, Task.Task a b ) -> Task.Task never Arborist.Assertions.FailureMessages"
       }
     ],
-    "generated-with-elm-version": "0.17.0"
+    "generated-with-elm-version": "0.17.1"
   },
   {
     "name": "Arborist.Assertions",
@@ -130,6 +131,6 @@
         "type": "Task.Task a b -> (Task.Task a b -> Arborist.Assertions.Assertion) -> Arborist.Assertions.Assertion"
       }
     ],
-    "generated-with-elm-version": "0.17.0"
+    "generated-with-elm-version": "0.17.1"
   }
 ]
