@@ -1,90 +1,90 @@
 #!/usr/bin/env node
 
-const child_process = require('child_process');
-const crypto = require('crypto');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+const childProcess = require('child_process')
+const crypto = require('crypto')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
 
-const RunFile = __dirname + '/Run.elm';
+const RunFile = path.join(__dirname, 'Run.elm')
 
-function main() {
-    let [, testModule, testFunction] = process.argv[2].match(/^(.+)\.([^\.]+)$/);
-    let runNumber = randomNumber();
-    let runFile = template(RunFile, {
-        testModule,
-        testFunction,
-        randomNumber: runNumber
-    });
-    let inputFiles = process.argv.slice(3);
-    let outputFile = compile([runFile].concat(inputFiles));
+function main () {
+  let [, testModule, testFunction] = process.argv[2].match(/^(.+)\.([^\.]+)$/)
+  let runNumber = randomNumber()
+  let runFile = template(RunFile, {
+    testModule,
+    testFunction,
+    randomNumber: runNumber
+  })
+  let inputFiles = process.argv.slice(3)
+  let outputFile = compile([runFile].concat(inputFiles))
 
-    global.window = global;
-    global.document = undefined;
+  global.window = global
+  global.document = undefined
 
-    let Elm = require(outputFile);
-    let app = Elm.Arborist[`Run_${runNumber}`].worker();
-    app.ports.output.subscribe(result => {
-        displayTestResult(result);
-        if (!result.passed) {
-            process.exitCode = 1;
-        }
-    });
+  let Elm = require(outputFile)
+  let app = Elm.Arborist[`Run_${runNumber}`].worker()
+  app.ports.output.subscribe(result => {
+    displayTestResult(result)
+    if (!result.passed) {
+      process.exitCode = 1
+    }
+  })
 }
 
-function template(file, substitutions) {
-    let extension = path.extname(file);
-    let basename = path.basename(file, extension);
-    let generatedFile = randomFile(basename, extension);
-    let templateString = fs.readFileSync(file, 'utf-8');
-    let contents = Object.keys(substitutions).reduce(
+function template (file, substitutions) {
+  let extension = path.extname(file)
+  let basename = path.basename(file, extension)
+  let generatedFile = randomFile(basename, extension)
+  let templateString = fs.readFileSync(file, 'utf-8')
+  let contents = Object.keys(substitutions).reduce(
         (text, name) => text.replace(`\${${name}}`, substitutions[name])
-    , templateString);
-    fs.writeFileSync(generatedFile, contents, 'utf-8');
-    return generatedFile;
+    , templateString)
+  fs.writeFileSync(generatedFile, contents, 'utf-8')
+  return generatedFile
 }
 
-function compile(inputFiles) {
-    let outputFile = randomFile('arborist-test', '.js');
-    child_process.execFileSync('elm', ['make', '--warn', '--yes', '--output', outputFile].concat(inputFiles));
-    return outputFile;
+function compile (inputFiles) {
+  let outputFile = randomFile('arborist-test', '.js')
+  childProcess.execFileSync('elm', ['make', '--warn', '--yes', '--output', outputFile].concat(inputFiles))
+  return outputFile
 }
 
-function randomFile(prefix, extension) {
-    return `${os.tmpdir()}/${prefix}-${randomNumber()}${extension}`;
+function randomFile (prefix, extension) {
+  return `${os.tmpdir()}/${prefix}-${randomNumber()}${extension}`
 }
 
-function randomNumber() {
-    return crypto.randomBytes(16).readUInt32LE(0);
+function randomNumber () {
+  return crypto.randomBytes(16).readUInt32LE(0)
 }
 
-function displayTestResult(result) {
-    let {passed, name, failureMessages} = result;
-    if (passed) {
-        process.stdout.write(green(`${name} PASSED\n`));
-    } else {
-        process.stdout.write(red(`${name} FAILED${displayMessages(failureMessages)}\n`));
-    }
+function displayTestResult (result) {
+  let {passed, name, failureMessages} = result
+  if (passed) {
+    process.stdout.write(green(`${name} PASSED\n`))
+  } else {
+    process.stdout.write(red(`${name} FAILED${displayMessages(failureMessages)}\n`))
+  }
 }
 
-function displayMessages(messages) {
-  return messages.map(message => `\n  ${message[0]}:\n  ${message[1]}`).join('');
+function displayMessages (messages) {
+  return messages.map(message => `\n  ${message[0]}:\n  ${message[1]}`).join('')
 }
 
-function green(string) {
-    return color('\x1b[32m', string);
+function green (string) {
+  return color('\x1b[32m', string)
 }
 
-function red(string) {
-    return color('\x1b[31m', string);
+function red (string) {
+  return color('\x1b[31m', string)
 }
 
-function color(code, string) {
-    if (process.stdout.isTTY) {
-        return `${code}${string}\x1b[0m`;
-    } else {
-        return string;
-    }
+function color (code, string) {
+  if (process.stdout.isTTY) {
+    return `${code}${string}\x1b[0m`
+  } else {
+    return string
+  }
 }
 
-main();
+main()

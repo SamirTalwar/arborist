@@ -1,0 +1,22 @@
+{
+  "name": "arborist",
+  "version": "2.0.0",
+  "description": "Arborist is a test framework for asynchronous Elm code.",
+  "main": "bin/run",
+  "scripts": {
+    "test": "make check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamirTalwar/arborist.git"
+  },
+  "author": "Samir Talwar",
+  "license": "MIT",
+  "homepage": "https://github.com/SamirTalwar/arborist#readme",
+  "bugs": {
+    "url": "https://github.com/SamirTalwar/arborist/issues"
+  },
+  "devDependencies": {
+    "standard": "^7.1.2"
+  }
+}

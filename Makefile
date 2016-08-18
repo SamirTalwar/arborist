@@ -10,6 +10,9 @@ build/arborist.js: $(PRODUCTION_FILES)
 clean:
 	rm -rf build elm-stuff
 
+.PHONY: check
+check: test lint
+
 .PHONY: test
 test: unit-test end-to-end-test
 
@@ -20,6 +23,10 @@ unit-test:
 .PHONY: end-to-end-test
 end-to-end-test:
 	$(SMOKE) bin/run test-end-to-end
+
+.PHONY: lint
+lint:
+	./node_modules/.bin/standard bin/run
 
 $(SMOKE):
 	git submodule update --init Smoke
