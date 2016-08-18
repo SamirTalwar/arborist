@@ -6,13 +6,18 @@ build/arborist.js: $(PRODUCTION_FILES)
 	mkdir -p build
 	elm make --warn --yes --docs=elm-stuff/documentation.json --output=$@ $^
 
-.PHONY: test unit-test end-to-end-test
+.PHONY: clean
+clean:
+	rm -rf build elm-stuff
 
+.PHONY: test
 test: unit-test end-to-end-test
 
+.PHONY: unit-test
 unit-test:
 	bin/run Test.Arborist.Unit.tests $(TEST_FILES)
 
+.PHONY: end-to-end-test
 end-to-end-test:
 	$(SMOKE) bin/run test-end-to-end
 
