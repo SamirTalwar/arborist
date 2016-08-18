@@ -20,6 +20,8 @@ function main() {
     let outputFile = compile([runFile].concat(inputFiles));
 
     global.window = global;
+    global.document = undefined;
+
     let Elm = require(outputFile);
     let app = Elm.Arborist[`Run_${runNumber}`].worker();
     app.ports.output.subscribe(result => {
