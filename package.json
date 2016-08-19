@@ -1,6 +1,6 @@
 {
   "name": "arborist",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Arborist is a test framework for asynchronous Elm code.",
   "main": "bin/run",
   "scripts": {
