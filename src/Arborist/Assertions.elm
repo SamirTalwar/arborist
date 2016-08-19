@@ -5,7 +5,7 @@ successfully matches the behaviour outlined by the matcher.
 
 # Assertions
 
-@docs assert
+@docs assert, pass, fail, failWith
 
 # Types
 
@@ -36,3 +36,18 @@ type alias Assertion = Task FailureMessages (Bool, FailureMessages)
 -}
 assert : Task a b -> (Task a b -> Assertion) -> Assertion
 assert actual matcher = matcher actual
+
+{-| `pass` always passes.
+-}
+pass : Assertion
+pass = Task.succeed (True, [("State", "Pass")])
+
+{-| `fail` forces the test to fail.
+-}
+fail : Assertion
+fail = Task.fail [("State", "Fail")]
+
+{-| `failWith` forces the test to fail with a reason.
+-}
+failWith : String -> Assertion
+failWith message = Task.fail [("State", "Fail"), ("Message", message)]

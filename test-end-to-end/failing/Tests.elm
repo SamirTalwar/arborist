@@ -21,5 +21,7 @@ tests =
         b = False |> Task.succeed
       in
         assert a (equals b)
-    )
+    ),
+
+    test "and some tests *always* fail" fail
   ]

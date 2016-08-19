@@ -8,6 +8,8 @@ import Arborist.Matchers exposing (..)
 tests : Tests
 tests =
   [
+    test "sync: a simple test that always passes" pass,
+
     test "sync: performs simple equality checks" (
       let
         a = True |> Task.succeed

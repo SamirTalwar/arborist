@@ -1,3 +1,4 @@
+always passes PASSED
 performs simple equality checks PASSED
 negates matchers PASSED
 verifies that an integer is between two others PASSED

@@ -8,6 +8,8 @@ import Task
 tests : List Test
 tests =
   [
+    test "always passes" pass,
+
     test "performs simple equality checks" (
       let
         a = True |> Task.succeed

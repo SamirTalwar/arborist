@@ -8,7 +8,15 @@ import Arborist.Matchers exposing (..)
 tests : Tests
 tests =
   [
-    test "fails: recognises assertion failure" (
+    test "failure: explicit failures fail" (
+      assert fail <| failsWith [("State", "Fail")]
+    ),
+
+    test "failure: explicit failures can fail with a reason" (
+      assert (failWith "It broke.") <| failsWith [("State", "Fail"), ("Message", "It broke.")]
+    ),
+
+    test "failure: recognises assertion failure" (
       let
         a = Ok "one" |> Task.fromResult
         b = Ok "two" |> Task.fromResult
@@ -16,7 +24,7 @@ tests =
         assert (assert a (equals b)) fails
     ),
 
-    test "fails: recognises task failure" (
+    test "failure: recognises task failure" (
       let
         a = Err "Uh oh." |> Task.fromResult
         b = Ok "What happened?" |> Task.fromResult
@@ -24,14 +32,14 @@ tests =
         assert (assert a (equals b)) fails
     ),
 
-    test "fails: fails if the assertion is successful" (
+    test "failure: fails if the assertion is successful" (
       let
         success = assert (Task.succeed 100) (equals (Task.succeed 100))
       in
         assert (assert success fails) fails
     ),
 
-    test "failsWith: recognises assertion failure" (
+    test "failure: recognises assertion failure" (
       let
         a = Ok "one" |> Task.fromResult
         b = Ok "two" |> Task.fromResult
@@ -42,7 +50,7 @@ tests =
         ])
     ),
 
-    test "failsWith: recognises task failure" (
+    test "failure: recognises task failure" (
       let
         a = Err "Uh oh." |> Task.fromResult
         b = Ok "What happened?" |> Task.fromResult
@@ -54,7 +62,7 @@ tests =
         ])
     ),
 
-    test "failsWith: fails if the assertion is successful" (
+    test "failure: fails if the assertion is successful" (
       let
         success = assert (Task.succeed 100) (equals (Task.succeed 100))
       in

@@ -4,3 +4,6 @@ but some tests fail FAILED
   False
   Actual:
   True
+and some tests *always* fail FAILED
+  State:
+  Fail

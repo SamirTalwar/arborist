@@ -3,7 +3,10 @@ module Arborist.Framework exposing (
     Tests,
     Name,
     test,
-    assert
+    assert,
+    pass,
+    fail,
+    failWith
   )
 
 {-| Arborist is a test framework for asynchronous code.
@@ -15,7 +18,7 @@ tasks, which are executed in parallel and reported on the command line.
 @docs Test, Tests, Name, test
 
 # Assertions
-@docs assert
+@docs assert, pass, fail, failWith
 -}
 
 import Task exposing (Task)
@@ -54,3 +57,24 @@ This function is re-exported from `Arborist.Assertions` for your convenience.
 -}
 assert : Task a b -> Matcher a b -> Assertion
 assert = Arborist.Assertions.assert
+
+{-| `pass` always passes.
+
+This function is re-exported from `Arborist.Assertions` for your convenience.
+-}
+pass : Assertion
+pass = Arborist.Assertions.pass
+
+{-| `fail` forces the test to fail.
+
+This function is re-exported from `Arborist.Assertions` for your convenience.
+-}
+fail : Assertion
+fail = Arborist.Assertions.fail
+
+{-| `failWith` forces the test to fail with a reason.
+
+This function is re-exported from `Arborist.Assertions` for your convenience.
+-}
+failWith : String -> Assertion
+failWith = Arborist.Assertions.failWith
