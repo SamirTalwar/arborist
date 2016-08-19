@@ -8,7 +8,7 @@ build/arborist.js: $(PRODUCTION_FILES)
 
 .PHONY: clean
 clean:
-	rm -rf build elm-stuff
+	rm -rf build elm-stuff/build-artifacts
 
 .PHONY: check
 check: test lint
