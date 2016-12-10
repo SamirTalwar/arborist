@@ -1,6 +1,6 @@
 module FailureTest exposing (tests)
 
-import Task
+import Task exposing (Task)
 
 import Arborist.Framework exposing (..)
 import Arborist.Matchers exposing (..)
@@ -18,16 +18,16 @@ tests =
 
     test "failure: recognises assertion failure" (
       let
-        a = Ok "one" |> Task.fromResult
-        b = Ok "two" |> Task.fromResult
+        a = Ok "one" |> fromResult
+        b = Ok "two" |> fromResult
       in
         assert (assert a (equals b)) fails
     ),
 
     test "failure: recognises task failure" (
       let
-        a = Err "Uh oh." |> Task.fromResult
-        b = Ok "What happened?" |> Task.fromResult
+        a = Err "Uh oh." |> fromResult
+        b = Ok "What happened?" |> fromResult
       in
         assert (assert a (equals b)) fails
     ),
@@ -41,8 +41,8 @@ tests =
 
     test "failure: recognises assertion failure" (
       let
-        a = Ok "one" |> Task.fromResult
-        b = Ok "two" |> Task.fromResult
+        a = Ok "one" |> fromResult
+        b = Ok "two" |> fromResult
       in
         assert (assert a (equals b)) (failsWith [
           ("Expected", "\"two\""),
@@ -52,8 +52,8 @@ tests =
 
     test "failure: recognises task failure" (
       let
-        a = Err "Uh oh." |> Task.fromResult
-        b = Ok "What happened?" |> Task.fromResult
+        a = Err "Uh oh." |> fromResult
+        b = Ok "What happened?" |> fromResult
       in
         assert (assert a (equals b)) (failsWith [
           ("Error", "\"Uh oh.\""),
@@ -73,3 +73,9 @@ tests =
         ])
     )
   ]
+
+fromResult : Result a b -> Task a b
+fromResult result =
+  case result of
+    Ok value -> Task.succeed value
+    Err error -> Task.fail error

@@ -17,7 +17,7 @@
     "url": "https://github.com/SamirTalwar/arborist/issues"
   },
   "devDependencies": {
-    "elm": "^0.17.1",
+    "elm": "^0.18.0",
     "standard": "^8.6.0"
   }
 }

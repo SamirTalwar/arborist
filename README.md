@@ -46,7 +46,7 @@ tests =
         a = True |> Task.succeed
         b = False |> Task.succeed
       in
-        assert a (not' (equals b))
+        assert a (not_ (equals b))
     ),
 
     test "verifies that an integer is between two others" (
@@ -55,7 +55,7 @@ tests =
 
     test "waits for tasks to succeed" (
       let
-        a = Process.sleep 100 `Task.andThen` always (Task.succeed 42)
+        a = Process.sleep 100 |> Task.andThen (always (Task.succeed 42))
         b = Task.succeed 42
       in
         assert a (equals b)
@@ -63,7 +63,7 @@ tests =
 
     test "waits for tasks to fail" (
       let
-        a = Process.sleep 100 `Task.andThen` always (Task.fail "Well, that didn't work.")
+        a = Process.sleep 100 |> Task.andThen (always (Task.fail "Well, that didn't work."))
         b = Task.fail "Well, that didn't work."
       in
         assert (assert a (equals b)) fails
@@ -76,7 +76,7 @@ You'll probably find yourself extracting groups of tests out into files as you n
 There are a few matchers in Arborist:
 
   * `equals`
-  * `not'`
+  * `not_`
   * `isIntBetween`
 
 Please submit issues and pull requests with ideas for more!

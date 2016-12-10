@@ -1,6 +1,6 @@
 module SynchronousTest exposing (tests)
 
-import Task
+import Task exposing (Task)
 
 import Arborist.Framework exposing (..)
 import Arborist.Matchers exposing (..)
@@ -23,21 +23,21 @@ tests =
         a = True |> Task.succeed
         b = False |> Task.succeed
       in
-        assert a (not' (equals b))
+        assert a (not_ (equals b))
     ),
 
     test "sync: can match results" (
       let
-        a = Ok "foo" |> Task.fromResult
-        b = Ok "foo" |> Task.fromResult
+        a = Ok "foo" |> fromResult
+        b = Ok "foo" |> fromResult
       in
         assert a (equals b)
     ),
 
     test "sync: recognises test failures" (
       let
-        a = Ok "Nope." |> Task.fromResult
-        b = Ok "foo" |> Task.fromResult
+        a = Ok "Nope." |> fromResult
+        b = Ok "foo" |> fromResult
       in
         assert (assert a (equals b)) (equals (Task.succeed (False, [
           ("Expected", "\"foo\""),
@@ -47,8 +47,8 @@ tests =
 
     test "sync: recognises test errors" (
       let
-        a = Err "Oh no!" |> Task.fromResult
-        b = Ok "foo" |> Task.fromResult
+        a = Err "Oh no!" |> fromResult
+        b = Ok "foo" |> fromResult
       in
         assert (assert a (equals b)) (failsWith [
           ("Error", "\"Oh no!\""),
@@ -57,3 +57,9 @@ tests =
         ])
     )
   ]
+
+fromResult : Result a b -> Task a b
+fromResult result =
+  case result of
+    Ok value -> Task.succeed value
+    Err error -> Task.fail error

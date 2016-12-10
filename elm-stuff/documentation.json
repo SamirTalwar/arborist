@@ -59,11 +59,11 @@
         "type": "Arborist.Framework.Name -> Arborist.Assertions.Assertion -> Arborist.Framework.Test"
       }
     ],
-    "generated-with-elm-version": "0.17.1"
+    "generated-with-elm-version": "0.18.0"
   },
   {
     "name": "Arborist.Matchers",
-    "comment": " Provides a set of matchers used for assertions.\n\n# Types\n@docs Matcher\n\n# Matchers\n@docs equals, isIntBetween\n@docs not'\n\n# Helpers\n\nThe helpers are generally only to be used when constructing your own matchers.\n\n@docs fails, failsWith\n@docs onFailure, sequenceMessages\n\n",
+    "comment": " Provides a set of matchers used for assertions.\n\n# Types\n@docs Matcher\n\n# Matchers\n@docs equals, isIntBetween\n@docs not_\n\n# Helpers\n\nThe helpers are generally only to be used when constructing your own matchers.\n\n@docs fails, failsWith\n@docs onFailure, sequenceMessages\n\n",
     "aliases": [
       {
         "name": "Matcher",
@@ -98,8 +98,8 @@
         "type": "Task.Task a Int -> Task.Task a Int -> Arborist.Matchers.Matcher a Int"
       },
       {
-        "name": "not'",
-        "comment": " Negates another matcher.\n\n    assert (Task.succeed 3) (not' (equals (Task.succeed 4)))\n",
+        "name": "not_",
+        "comment": " Negates another matcher.\n\n    assert (Task.succeed 3) (not_ (equals (Task.succeed 4)))\n",
         "type": "Arborist.Matchers.Matcher a b -> Arborist.Matchers.Matcher a b"
       },
       {
@@ -113,7 +113,7 @@
         "type": "List ( String, Task.Task a b ) -> Task.Task never Arborist.Assertions.FailureMessages"
       }
     ],
-    "generated-with-elm-version": "0.17.1"
+    "generated-with-elm-version": "0.18.0"
   },
   {
     "name": "Arborist.Assertions",
@@ -161,6 +161,6 @@
         "type": "Arborist.Assertions.Assertion"
       }
     ],
-    "generated-with-elm-version": "0.17.1"
+    "generated-with-elm-version": "0.18.0"
   }
 ]

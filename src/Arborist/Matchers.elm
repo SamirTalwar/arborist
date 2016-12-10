@@ -7,7 +7,7 @@ module Arborist.Matchers exposing (..)
 
 # Matchers
 @docs equals, isIntBetween
-@docs not'
+@docs not_
 
 # Helpers
 
@@ -28,10 +28,10 @@ type alias Matcher a b = Task a b -> Assertion
 
 {-| Negates another matcher.
 
-    assert (Task.succeed 3) (not' (equals (Task.succeed 4)))
+    assert (Task.succeed 3) (not_ (equals (Task.succeed 4)))
 -}
-not' : Matcher a b -> Matcher a b
-not' matcher actual =
+not_ : Matcher a b -> Matcher a b
+not_ matcher actual =
   matcher actual |> Task.map (\(result, failureMessages) -> (not result, failureMessages))
 
 {-| Asserts that two values are equal.
@@ -72,7 +72,7 @@ fails : Matcher FailureMessages (Bool, FailureMessages)
 fails assertion =
   assertion
     |> Task.map (\(result, failureMessages) -> (not result, failureMessages))
-    |> (flip Task.onError) (\failureMessages -> Task.succeed (True, failureMessages))
+    |> Task.onError (\failureMessages -> Task.succeed (True, failureMessages))
 
 {-| Asserts that another assertion fails with specific failure messages.
 
@@ -84,11 +84,11 @@ fails assertion =
 failsWith : FailureMessages -> Matcher FailureMessages (Bool, FailureMessages)
 failsWith expected assertion =
   assertion
-    `Task.andThen` (\(result, actual) ->
+    |> Task.andThen (\(result, actual) ->
         if result
           then Task.succeed (False, ("Error", "Unexpected success") :: actual)
           else assert (Task.succeed actual) (equals (Task.succeed expected)))
-    `Task.onError` (\actual -> assert (Task.succeed actual) (equals (Task.succeed expected)))
+    |> Task.onError (\actual -> assert (Task.succeed actual) (equals (Task.succeed expected)))
 
 {-| When constructing a matcher, adds failure messages.
 
@@ -107,13 +107,13 @@ This function is often used with `sequenceMessages`.
 onFailure : Task a FailureMessages -> Task a Bool -> Assertion
 onFailure messages result =
   let
-    recoveredMessages = messages `Task.onError` \error -> Task.succeed [("Error", toString error)]
+    recoveredMessages = messages |> Task.onError (\error -> Task.succeed [("Error", toString error)])
   in
     Task.map2 (,) result recoveredMessages
-      `Task.onError` \error ->
+      |> Task.onError (\error ->
         recoveredMessages
-          `Task.andThen` \ms ->
-            Task.fail (("Error", toString error) :: ms)
+          |> Task.andThen (\ms ->
+            Task.fail (("Error", toString error) :: ms)))
 
 {-| Converts a list of failure messages which have value tasks into a task of failure messages.
 
@@ -133,6 +133,7 @@ sequenceMessages messageTasks =
     (names, valueTasks) = List.unzip messageTasks
   in
     valueTasks
-      |> List.map Task.toResult
+      |> List.map (Task.map Ok)
+      |> List.map (Task.onError (Err >> Task.succeed))
       |> Task.sequence
       |> Task.map (\values -> List.map2 (,) names (List.map resultToString values))
