@@ -9,7 +9,7 @@ const path = require('path')
 const RunFile = path.join(__dirname, 'Run.elm')
 
 function main () {
-  let [, testModule, testFunction] = process.argv[2].match(/^(.+)\.([^\.]+)$/)
+  let [, testModule, testFunction] = process.argv[2].match(/^(.+)\.([^.]+)$/)
   let runNumber = randomNumber()
   let runFile = template(RunFile, {
     testModule,
