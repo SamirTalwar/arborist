@@ -1,0 +1,8 @@
+machine:
+  node:
+    version: 7.2.1
+
+checkout:
+  post:
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
